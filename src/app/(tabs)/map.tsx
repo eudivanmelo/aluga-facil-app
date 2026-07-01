@@ -1,15 +1,19 @@
-import { SafeAreaView, StyleSheet, View } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { StyleSheet, View } from 'react-native';
+import { PropertyMap } from '@/components/organisms/PropertyMap';
+import { PropertyMapItem } from '@/data/mapProperties';
+import { COLORS } from '@/constants/colors';
 
 export default function MapScreen() {
+  function handleMarkerPress(property: PropertyMapItem) {
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content} />
-    </SafeAreaView>
+    <View style={styles.container}>
+      <PropertyMap onMarkerPress={handleMarkerPress} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.neutral[200] },
-  content: { flex: 1 },
 });
