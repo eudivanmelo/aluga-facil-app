@@ -2,6 +2,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { Marker } from '@maplibre/maplibre-react-native';
 import { Typography } from '@/components/atoms/Typography';
 import { styles } from './styles';
+import { formatPrice } from '@/utils/textFormat';
 
 interface Props {
   id: string;
@@ -12,13 +13,6 @@ interface Props {
 }
 
 export function MapMarker({ id, coordinate, price, isSelected, onPress }: Props) {
-  const formattedPrice = price.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-
   return (
     <Marker lngLat={coordinate} anchor='top'>
       <TouchableOpacity
@@ -26,15 +20,15 @@ export function MapMarker({ id, coordinate, price, isSelected, onPress }: Props)
         activeOpacity={0.85}
         style={styles.wrapper}
       >
-        <View style={[styles.pill, isSelected && styles.pillSelected]}>
+        <View style={[styles.bubble, isSelected && styles.bubbleSelected]}>
           <Typography
             variant="label/tiny"
             style={[styles.label, isSelected && styles.labelSelected]}
           >
-            {formattedPrice}
+            {formatPrice(price)}
           </Typography>
         </View>
-        <View style={[styles.arrow, isSelected && styles.arrowSelected]} />
+        <View style={[styles.dot, isSelected && styles.dotSelected]} />
       </TouchableOpacity>
     </Marker>
   );

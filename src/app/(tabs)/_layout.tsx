@@ -9,8 +9,8 @@ function TabBarWrapper() {
 
   const activeRoute: TabRoute =
     pathname.startsWith('/map') ? 'map' :
-    pathname.startsWith('/auth') || pathname.startsWith('/my-area') ? 'auth' :
-    'catalog';
+      pathname.startsWith('/auth') || pathname.startsWith('/my-area') ? 'auth' :
+        'catalog';
 
   function handlePress(route: TabRoute) {
     if (route === 'catalog') router.push('/(tabs)/');
@@ -33,14 +33,14 @@ function TabBarWrapper() {
 export default function TabsLayout() {
   return (
     <View style={styles.container}>
-      <Tabs
-        screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}
-      >
-        <Tabs.Screen name="index" />
-        <Tabs.Screen name="map" />
-        <Tabs.Screen name="my-area" />
-      </Tabs>
-      <TabBarWrapper />
+        <Tabs
+          screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}
+        >
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="map" />
+          <Tabs.Screen name="my-area" />
+        </Tabs>
+        <TabBarWrapper />
     </View>
   );
 }

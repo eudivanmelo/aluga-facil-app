@@ -5,42 +5,40 @@ export const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
   },
-  pill: {
+  bubble: {
     backgroundColor: COLORS.neutral[100],
-    borderRadius: 99,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
     borderWidth: 1.5,
-    borderColor: COLORS.neutral[400],
+    borderColor: COLORS.primary[500],
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 4,
     elevation: 3,
   },
-  pillSelected: {
+  bubbleSelected: {
     backgroundColor: COLORS.primary[500],
-    borderColor: COLORS.primary[800],
   },
   label: {
-    color: COLORS.neutral[900],
+    color: COLORS.primary[500],
     fontWeight: '700',
   },
   labelSelected: {
     color: COLORS.neutral[100],
   },
-  arrow: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
-    borderTopWidth: 7,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: COLORS.neutral[400],
-    marginTop: -1,
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.primary[500],
+    marginTop: 2,
   },
-  arrowSelected: {
-    borderTopColor: COLORS.primary[800],
+  dotSelected: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.primary[800],
   },
 });

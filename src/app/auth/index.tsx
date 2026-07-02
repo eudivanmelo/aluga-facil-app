@@ -1,7 +1,8 @@
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import {  StyleSheet, View } from 'react-native';
 import { Redirect } from 'expo-router';
 //import { useAuth } from '../../contexts/AuthContext';
 import { COLORS } from '../../constants/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
   const { isAuthenticated } = { isAuthenticated: true }; // Replace with your actual authentication logic

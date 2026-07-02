@@ -10,7 +10,7 @@ const STYLE_URL = 'https://tiles.versatiles.org/assets/styles/colorful/style.jso
 const INITIAL_ZOOM = 14;
 
 interface Props {
-  onMarkerPress?: (property: PropertyMapItem) => void;
+  onMarkerPress?: (property: PropertyMapItem | null) => void;
 }
 
 export function PropertyMap({ onMarkerPress }: Props) {
@@ -22,6 +22,9 @@ export function PropertyMap({ onMarkerPress }: Props) {
       if (!property) return;
 
       setSelectedId((prev) => (prev === id ? null : id));
+
+      if (selectedId === property.id)
+        return onMarkerPress?.(null);
 
       onMarkerPress?.(property);
     },
