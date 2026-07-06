@@ -48,13 +48,17 @@ export function Button({
                 />
             ) : (
                 <>
-                    <View style={styles.icon}>{leftIcon ?? null}</View>
+                    {leftIcon && (
+                        <View style={styles.icon}>{leftIcon}</View>
+                    )}
 
                     <Typography variant="body/medium" style={labelStyles[variant]}>
                         {label}
                     </Typography>
 
-                    <View style={styles.icon}>{rightIcon ?? null}</View>
+                    {rightIcon && (
+                        <View style={styles.icon}>{rightIcon}</View>
+                    )}
                 </>
             )}
         </TouchableOpacity>
