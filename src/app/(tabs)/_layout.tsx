@@ -1,34 +1,6 @@
-import { Tabs, usePathname, useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
-import { TabBar, TabRoute } from '../../components/organisms/TabBar';
-
-function TabBarWrapper() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { isAuthenticated } = { isAuthenticated: false }; // Substitua com a lógica real de autenticação
-
-  const activeRoute: TabRoute =
-    pathname.startsWith('/map') ? 'map' :
-      pathname.startsWith('/auth') || pathname.startsWith('/my-area') ? 'auth' :
-        'catalog';
-
-  function handlePress(route: TabRoute) {
-    if (route === 'catalog') router.push('/(tabs)/');
-    if (route === 'map') router.push('/(tabs)/map');
-    if (route === 'auth') {
-      if (isAuthenticated) router.push('/(tabs)/my-area');
-      else router.push('/auth/');
-    }
-  }
-
-  return (
-    <TabBar
-      activeRoute={activeRoute}
-      isAuthenticated={isAuthenticated}
-      onPress={handlePress}
-    />
-  );
-}
+import { AppTabBar } from '../../components/organisms/AppTabBar';
 
 export default function TabsLayout() {
   return (
@@ -40,7 +12,7 @@ export default function TabsLayout() {
           <Tabs.Screen name="map" />
           <Tabs.Screen name="my-area" />
         </Tabs>
-        <TabBarWrapper />
+        <AppTabBar />
     </View>
   );
 }

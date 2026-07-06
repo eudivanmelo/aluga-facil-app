@@ -1,22 +1,163 @@
-import {  StyleSheet, View } from 'react-native';
-import { Redirect } from 'expo-router';
-//import { useAuth } from '../../contexts/AuthContext';
-import { COLORS } from '../../constants/colors';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Typography } from '@/components/atoms/Typography';
+import { COLORS } from '@/constants/colors';
+import LogoIcon from '../../../assets/logo-home.svg'; 
+import { Button } from '@/components/atoms/Button';
+import { Input } from '@/components/atoms/Input';
 
 export default function LoginScreen() {
-  const { isAuthenticated } = { isAuthenticated: false }; // Replace with your actual authentication logic
+  const [cpf, setCpf] = useState('');
+  const [password, setPassword] = useState('');
 
-  if (isAuthenticated) return <Redirect href="/(tabs)/my-area" />;
+  const handleLogin = () => {
+    console.log('Login com:', { cpf, password });
+  };
+
+  const handleCreateAccount = () => {
+    console.log('Navegar para Criar Conta');
+  };
+
+  const handleForgotPassword = () => {
+    console.log('Esqueci minha senha');
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content} />
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Cabeçalho e Logo */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <LogoIcon width={90} height={90} color={COLORS.primary[500]} />
+            </View>
+            <Typography variant="heading/large" style={styles.title}>
+              Entre na sua conta
+            </Typography>
+            <Typography variant="body/medium" color={COLORS.neutral[700]} style={styles.subtitle}>
+              Acesse para continuar
+            </Typography>
+          </View>
+
+          {/* Formulário */}
+          <View style={styles.formContainer}>
+            <Input
+              label="CPF"
+              placeholder="000.000.000-00"
+              keyboardType="numeric"
+              value={cpf}
+              onChangeText={setCpf}
+              containerStyle={styles.inputSpacing}
+            />
+
+            <Input
+              label="Senha"
+              variant="password"
+              placeholder="Digite sua senha"
+              value={password}
+              onChangeText={setPassword}
+              containerStyle={styles.inputSpacing}
+            />
+
+            <TouchableOpacity style={styles.forgotPasswordButton} onPress={handleForgotPassword}>
+              <Typography variant="body/medium" color={COLORS.primary[500]} style={styles.forgotPasswordText}>
+                Esqueci minha senha
+              </Typography>
+            </TouchableOpacity>
+
+            <Button
+              label="Entrar"
+              variant="primary"
+              onPress={handleLogin}
+              style={styles.buttonCenter} // Força a centralização do texto interno
+            />
+          </View>
+
+          {/* Rodapé / Criar Conta */}
+          <View style={styles.footer}>
+            <Typography variant="body/medium" color={COLORS.neutral[900]} style={styles.noAccountText}>
+              Não tem uma conta?
+            </Typography>
+            <Button
+              label="Criar conta"
+              variant="outline"
+              onPress={handleCreateAccount}
+              style={styles.buttonCenter} // Força a centralização do texto interno
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.neutral[200] },
-  content: { flex: 1 },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#E8F5F3', // Tom esverdeado do fundo da imagem
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center', // Centraliza todo o bloco verticalmente na tela
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  logoContainer: {
+    marginBottom: 16,
+  },
+  title: {
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  subtitle: {
+    textAlign: 'center',
+  },
+  formContainer: {
+    marginBottom: 24,
+  },
+  inputSpacing: {
+    marginBottom: 16,
+  },
+  forgotPasswordButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 24,
+    marginTop: -4,
+  },
+  forgotPasswordText: {
+    fontWeight: '600',
+  },
+  footer: {
+    marginTop: 16, // Removido o 'auto' para não esticar o layout até as bordas extremas
+  },
+  noAccountText: {
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  // Estilo adicionado para garantir que o texto do seu componente Button fique no centro
+  buttonCenter: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
