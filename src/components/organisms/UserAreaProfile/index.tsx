@@ -8,6 +8,7 @@ import EmailIcon from '../../../../assets/email.svg';
 import PhoneIcon from '../../../../assets/phone.svg';
 import EditIcon from '../../../../assets/edit.svg';
 import { styles } from './styles';
+import { ContactRow } from '@/components/atoms/ContactRow';
 
 interface Props {
   name: string;
@@ -16,17 +17,6 @@ interface Props {
   avatarUrl: string | null;
   verified?: boolean;
   onEditPress?: () => void;
-}
-
-function ContactRow({ icon, value }: { icon: React.ReactNode; value: string }) {
-  return (
-    <View style={styles.contactRow}>
-      {icon}
-      <Typography variant="body/medium" color={COLORS.primary[800]} style={styles.contactText}>
-        {value}
-      </Typography>
-    </View>
-  );
 }
 
 export function UserAreaProfile({
@@ -48,7 +38,7 @@ export function UserAreaProfile({
           {name}
         </Typography>
 
-        <ContactRow icon={<EmailIcon width={16} height={16} />} value={email} />
+        {/* <ContactRow icon={<EmailIcon width={16} height={16} />} value={email} /> */}
         <ContactRow icon={<PhoneIcon width={16} height={16} />} value={phone} />
 
         {verified && <VerifiedTag />}

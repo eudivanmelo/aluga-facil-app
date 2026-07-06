@@ -20,13 +20,5 @@ export const styles = StyleSheet.create({
   },
   name: {
     color: COLORS.neutral[900],
-  },
-  contactRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  contactText: {
-    flex: 1,
   }
 });

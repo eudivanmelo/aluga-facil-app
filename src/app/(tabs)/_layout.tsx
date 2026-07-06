@@ -5,7 +5,7 @@ import { TabBar, TabRoute } from '../../components/organisms/TabBar';
 function TabBarWrapper() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = { isAuthenticated: true };
+  const { isAuthenticated } = { isAuthenticated: false }; // Substitua com a lógica real de autenticação
 
   const activeRoute: TabRoute =
     pathname.startsWith('/map') ? 'map' :
@@ -16,7 +16,7 @@ function TabBarWrapper() {
     if (route === 'catalog') router.push('/(tabs)/');
     if (route === 'map') router.push('/(tabs)/map');
     if (route === 'auth') {
-      if (true) router.push('/(tabs)/my-area');
+      if (isAuthenticated) router.push('/(tabs)/my-area');
       else router.push('/auth/');
     }
   }

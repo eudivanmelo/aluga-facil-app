@@ -5,7 +5,7 @@ import { COLORS } from '../../constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
-  const { isAuthenticated } = { isAuthenticated: true }; // Replace with your actual authentication logic
+  const { isAuthenticated } = { isAuthenticated: false }; // Replace with your actual authentication logic
 
   if (isAuthenticated) return <Redirect href="/(tabs)/my-area" />;
 
