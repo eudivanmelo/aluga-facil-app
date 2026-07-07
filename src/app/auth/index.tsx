@@ -8,13 +8,15 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Typography } from '@/components/atoms/Typography';
 import { COLORS } from '@/constants/colors';
-import LogoIcon from '../../../assets/logo-home.svg'; 
+import LogoIcon from '../../../assets/logo-home.svg';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,11 +25,11 @@ export default function LoginScreen() {
   };
 
   const handleCreateAccount = () => {
-    console.log('Navegar para Criar Conta');
+    router.push('/auth/register');
   };
 
   const handleForgotPassword = () => {
-    console.log('Esqueci minha senha');
+    router.push('/auth/forgot-password');
   };
 
   return (
