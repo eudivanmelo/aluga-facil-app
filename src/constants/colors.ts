@@ -16,6 +16,11 @@ export const COLORS = {
         500: '#2ECC71',
     },
 
+    danger: {
+        100: '#FDECEC',
+        500: '#E53E3E',
+    },
+
     neutral: {
         100: '#FFFFFF',
         200: '#F7FAFC',

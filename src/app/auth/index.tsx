@@ -14,14 +14,20 @@ import { COLORS } from '@/constants/colors';
 import LogoIcon from '../../../assets/logo-home.svg';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
+import { useLogin } from '@/hooks/useLogin';
+import { getErrorMessage } from '@/utils/errors';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { mutate: login, isPending, error } = useLogin();
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    console.log('Login com:', { cpf, password });
+    login(
+      { cpf, password },
+      { onSuccess: () => router.replace('/(tabs)/my-area') }
+    );
   };
 
   const handleCreateAccount = () => {
@@ -81,10 +87,17 @@ export default function LoginScreen() {
               </Typography>
             </TouchableOpacity>
 
+            {error && (
+              <Typography variant="body/small" color={COLORS.danger[500]} style={styles.errorText}>
+                {getErrorMessage(error, 'CPF ou senha inválidos.')}
+              </Typography>
+            )}
+
             <Button
               label="Entrar"
               variant="primary"
               onPress={handleLogin}
+              loading={isPending}
               style={styles.buttonCenter} // Força a centralização do texto interno
             />
           </View>
@@ -148,6 +161,9 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontWeight: '600',
+  },
+  errorText: {
+    marginBottom: 16,
   },
   footer: {
     marginTop: 16, // Removido o 'auto' para não esticar o layout até as bordas extremas

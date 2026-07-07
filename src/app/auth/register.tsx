@@ -13,18 +13,32 @@ import { COLORS } from '@/constants/colors';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
 import LogoIcon from '../../../assets/logo-home.svg';
+import { useRegister } from '@/hooks/useRegister';
+import { getErrorMessage } from '@/utils/errors';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { mutate: register, isPending, error } = useRegister();
   const [cpf, setCpf] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleRegister = () => {
-    router.push({ pathname: '/auth/register-confirm', params: { email } });
+    setValidationError(null);
+
+    if (password !== confirmPassword) {
+      setValidationError('As senhas não coincidem.');
+      return;
+    }
+
+    register(
+      { cpf, name: fullName, email, password, phone },
+      { onSuccess: () => router.push({ pathname: '/auth/register-confirm', params: { email } }) }
+    );
   };
 
   const handleGoToLogin = () => {
@@ -108,10 +122,17 @@ export default function RegisterScreen() {
               containerStyle={styles.inputSpacing}
             />
 
+            {(validationError || error) && (
+              <Typography variant="body/small" color={COLORS.danger[500]} style={styles.errorText}>
+                {validationError ?? getErrorMessage(error, 'Não foi possível criar sua conta.')}
+              </Typography>
+            )}
+
             <Button
               label="Criar conta"
               variant="primary"
               onPress={handleRegister}
+              loading={isPending}
               style={styles.buttonCenter}
             />
           </View>
@@ -165,6 +186,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputSpacing: {
+    marginBottom: 16,
+  },
+  errorText: {
     marginBottom: 16,
   },
   footer: {

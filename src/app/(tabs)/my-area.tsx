@@ -1,5 +1,5 @@
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { COLORS } from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Typography } from '@/components/atoms/Typography';
@@ -8,6 +8,7 @@ import { AddPropertyBanner } from '@/components/molecules/AddPropertyBanner';
 import HomeIcon from '../../../assets/home.svg';
 import { ProfilePropertyCard } from '@/components/molecules/ProfilePropertyCard';
 import { UserMenu } from '@/components/molecules/UserMenu';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Mock de dados para renderizar a lista
 const MOCK_PROPERTIES = [
@@ -28,21 +29,28 @@ const MOCK_PROPERTIES = [
 ];
 
 export default function MyAreaScreen() {
-  const { isAuthenticated } = { isAuthenticated: true }; 
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user, logout } = useAuth();
 
+  if (isLoading) return null;
   if (!isAuthenticated) return <Redirect href="/auth/" />;
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/auth/');
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
+
         {/* 1. Perfil do Usuário */}
         <UserAreaProfile
-          name="João Silva"
-          email="joaosilva@email.com"
-          phone="(00) 00000-0000"
+          name={user?.name ?? ''}
+          email={user?.email ?? ''}
+          phone={user?.phone ?? ''}
           avatarUrl={null}
-          verified
+          verified={user?.verified}
           onEditPress={() => console.log('Editar perfil')}
         />
 
@@ -78,10 +86,10 @@ export default function MyAreaScreen() {
           ))}
         </View>
 
-        <UserMenu 
+        <UserMenu
           onChangePassword={() => console.log('Navegar para alterar senha')}
           onTermsOfUse={() => console.log('Abrir termos de uso')}
-          onLogout={() => console.log('Deslogar do app')}
+          onLogout={handleLogout}
         />
 
       </ScrollView>

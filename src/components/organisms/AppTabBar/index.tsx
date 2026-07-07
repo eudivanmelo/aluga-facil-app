@@ -1,10 +1,11 @@
 import { usePathname, useRouter } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 import { TabBar, TabRoute } from '../TabBar';
 
 function AppTabBarWrapper() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = { isAuthenticated: false }; // Substitua com a lógica real de autenticação
+  const { isAuthenticated } = useAuth();
 
   const activeRoute: TabRoute =
     pathname.startsWith('/map') ? 'map' :
