@@ -12,10 +12,12 @@ export const PROPERTY_TYPE_OPTIONS: SelectOption[] = [
   { label: 'Sobrado', value: 'sobrado' },
 ];
 
+// O valor é exibido diretamente após a barra no PropertyCard (ex: "/mês"), então usa a
+// mesma grafia esperada lá em vez de um código interno.
 export const PAYMENT_FREQUENCY_OPTIONS: SelectOption[] = [
-  { label: 'Por mês', value: 'mensal' },
-  { label: 'Por semana', value: 'semanal' },
-  { label: 'Por dia', value: 'diaria' },
+  { label: 'Por mês', value: 'mês' },
+  { label: 'Por semana', value: 'semana' },
+  { label: 'Por dia', value: 'dia' },
 ];
 
 export const PETS_ALLOWED_OPTIONS: SelectOption[] = [

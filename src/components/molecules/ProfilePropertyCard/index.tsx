@@ -11,7 +11,7 @@ interface Props {
   title: string;
   location: string;
   price: string;
-  imageUrl: string;
+  imageUrl?: string | null;
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -20,8 +20,12 @@ interface Props {
 export function ProfilePropertyCard({ title, location, price, imageUrl, onView, onEdit, onDelete }: Props) {
   return (
     <View style={styles.card}>
-      <Image source={{ uri: imageUrl }} style={styles.image} />
-      
+      {imageUrl ? (
+        <Image source={{ uri: imageUrl }} style={styles.image} />
+      ) : (
+        <View style={[styles.image, styles.imagePlaceholder]} />
+      )}
+
       <View style={styles.content}>
         <Typography variant="heading/small" style={styles.title}>{title}</Typography>
         

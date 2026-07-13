@@ -6,3 +6,14 @@ export const formatPrice = (price: number): string => {
     maximumFractionDigits: 0,
   });
 };
+
+/** Parses a loosely-typed Brazilian currency input ("R$ 1.500,00", "1500") into a number. */
+export const parsePriceInput = (value: string): number => {
+  const normalized = value
+    .replace(/[^\d,.-]/g, '')
+    .replace(/\.(?=\d{3}(\D|$))/g, '')
+    .replace(',', '.');
+
+  const parsed = parseFloat(normalized);
+  return Number.isNaN(parsed) ? 0 : parsed;
+};

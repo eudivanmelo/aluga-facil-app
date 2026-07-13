@@ -9,12 +9,16 @@ import { Stepper } from '@/components/atoms/Stepper';
 import { TagInput } from '@/components/molecules/TagInput';
 import { WizardHeader } from '@/components/organisms/WizardHeader';
 import { COLORS } from '@/constants/colors';
-import { FURNISHED_OPTIONS, PETS_ALLOWED_OPTIONS } from '@/constants/propertyOptions';
+import { FURNISHED_OPTIONS, PETS_ALLOWED_OPTIONS, PROPERTY_TYPE_OPTIONS } from '@/constants/propertyOptions';
 import { useNewProperty } from '@/contexts/NewPropertyContext';
+import { useCreateProperty } from '@/hooks/useCreateProperty';
+import { getErrorMessage } from '@/utils/errors';
+import { parsePriceInput } from '@/utils/textFormat';
 
 export default function NewPropertyStep3Screen() {
   const router = useRouter();
   const { formData, updateFormData, resetFormData } = useNewProperty();
+  const { mutate: createProperty, isPending, error: submitError } = useCreateProperty();
   const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = () => {
@@ -23,18 +27,57 @@ export default function NewPropertyStep3Screen() {
       return;
     }
 
-    setError(null);
-    console.log('Novo imóvel cadastrado:', formData);
+    if (formData.latitude === null || formData.longitude === null) {
+      setError('Selecione a localização do imóvel no mapa antes de confirmar.');
+      return;
+    }
 
-    Alert.alert('Imóvel cadastrado!', 'Seu anúncio foi criado com sucesso.', [
+    setError(null);
+
+    // O backend ainda não tem um campo dedicado para "tipo do imóvel" nem para a opção
+    // "semi-mobiliado" — preservamos essa informação como tags de categorização.
+    const propertyTypeLabel = PROPERTY_TYPE_OPTIONS.find((o) => o.value === formData.propertyType)?.label;
+    const extraTags = [
+      propertyTypeLabel,
+      formData.furnished === 'semi-mobiliado' ? 'Semi-mobiliado' : null,
+    ].filter((tag): tag is string => !!tag && !formData.tags.includes(tag));
+
+    createProperty(
       {
-        text: 'OK',
-        onPress: () => {
-          resetFormData();
-          router.replace('/(tabs)/my-area');
-        },
+        title: formData.title,
+        description: formData.description,
+        price: parsePriceInput(formData.price),
+        paymentFrequency: formData.paymentFrequency || 'mês',
+        street: formData.street,
+        number: formData.number,
+        neighborhood: formData.neighborhood,
+        complement: formData.complement,
+        city: formData.city,
+        state: formData.state,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        bedrooms: formData.bedrooms,
+        bathrooms: formData.bathrooms,
+        parkingSpaces: formData.parkingSpaces,
+        petsAllowed: formData.petsAllowed === 'sim',
+        isFurnished: formData.furnished !== 'nao-mobiliado',
+        tags: [...formData.tags, ...extraTags],
+        photos: formData.photos,
       },
-    ]);
+      {
+        onSuccess: () => {
+          Alert.alert('Imóvel cadastrado!', 'Seu anúncio foi criado com sucesso.', [
+            {
+              text: 'OK',
+              onPress: () => {
+                resetFormData();
+                router.replace('/(tabs)/my-area');
+              },
+            },
+          ]);
+        },
+      }
+    );
   };
 
   return (
@@ -100,19 +143,26 @@ export default function NewPropertyStep3Screen() {
           onChange={(tags) => updateFormData({ tags })}
         />
 
-        {error && (
+        {(error || submitError) && (
           <Typography variant="body/small" color={COLORS.danger[500]} style={styles.error}>
-            {error}
+            {error ?? getErrorMessage(submitError, 'Não foi possível cadastrar o imóvel.')}
           </Typography>
         )}
       </ScrollView>
 
       <View style={styles.footer}>
-        <Button label="Confirmar" variant="primary" onPress={handleConfirm} style={styles.footerButton} />
+        <Button
+          label="Confirmar"
+          variant="primary"
+          onPress={handleConfirm}
+          loading={isPending}
+          style={styles.footerButton}
+        />
         <Button
           label="Voltar"
           variant="outline"
           onPress={() => router.back()}
+          disabled={isPending}
           style={styles.footerButton}
         />
       </View>

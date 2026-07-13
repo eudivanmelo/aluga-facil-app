@@ -15,6 +15,9 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 12,
   },
+  imagePlaceholder: {
+    backgroundColor: COLORS.neutral[400],
+  },
   content: {
     flex: 1,
     justifyContent: 'space-between',

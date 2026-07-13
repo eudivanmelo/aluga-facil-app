@@ -1,4 +1,4 @@
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, ScrollView } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { COLORS } from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,28 +9,13 @@ import HomeIcon from '../../../assets/home.svg';
 import { ProfilePropertyCard } from '@/components/molecules/ProfilePropertyCard';
 import { UserMenu } from '@/components/molecules/UserMenu';
 import { useAuth } from '@/contexts/AuthContext';
-
-// Mock de dados para renderizar a lista
-const MOCK_PROPERTIES = [
-  {
-    id: '1',
-    title: 'Quarto individual',
-    location: 'Bairro João XXIII, Pau dos Ferros/RN',
-    price: 'R$ 600,00',
-    imageUrl: 'https://via.placeholder.com/150', // Substitua por imagens reais
-  },
-  {
-    id: '2',
-    title: 'Quarto individual',
-    location: 'Bairro João XXIII, Pau dos Ferros/RN',
-    price: 'R$ 600,00',
-    imageUrl: 'https://via.placeholder.com/150',
-  },
-];
+import { useMyProperties } from '@/hooks/useMyProperties';
+import { formatPrice } from '@/utils/textFormat';
 
 export default function MyAreaScreen() {
   const router = useRouter();
   const { isAuthenticated, isLoading, user, logout } = useAuth();
+  const { data: properties = [], isLoading: isLoadingProperties } = useMyProperties();
 
   if (isLoading) return null;
   if (!isAuthenticated) return <Redirect href="/auth/" />;
@@ -67,23 +52,31 @@ export default function MyAreaScreen() {
               </Typography>
             </View>
             <Typography variant="body/small" color={COLORS.primary[500]}>
-              {MOCK_PROPERTIES.length} imóveis cadastrados
+              {properties.length} imóveis cadastrados
             </Typography>
           </View>
 
           {/* Lista de Cards */}
-          {MOCK_PROPERTIES.map((property) => (
-            <ProfilePropertyCard
-              key={property.id}
-              title={property.title}
-              location={property.location}
-              price={property.price}
-              imageUrl={property.imageUrl}
-              onView={() => console.log('Ver imóvel', property.id)}
-              onEdit={() => console.log('Editar imóvel', property.id)}
-              onDelete={() => console.log('Deletar imóvel', property.id)}
-            />
-          ))}
+          {isLoadingProperties ? (
+            <ActivityIndicator color={COLORS.primary[500]} />
+          ) : properties.length === 0 ? (
+            <Typography variant="body/small" color={COLORS.neutral[700]}>
+              Você ainda não cadastrou nenhum imóvel.
+            </Typography>
+          ) : (
+            properties.map((property) => (
+              <ProfilePropertyCard
+                key={property.id}
+                title={property.title}
+                location={`Bairro ${property.neighborhood}, ${property.city}/${property.state}`}
+                price={formatPrice(property.price)}
+                imageUrl={property.firstPhotoUrl}
+                onView={() => router.push(`/property/${property.id}`)}
+                onEdit={() => console.log('Editar imóvel', property.id)}
+                onDelete={() => console.log('Deletar imóvel', property.id)}
+              />
+            ))
+          )}
         </View>
 
         <UserMenu
