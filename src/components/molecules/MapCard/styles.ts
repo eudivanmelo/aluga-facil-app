@@ -27,13 +27,11 @@ cardInner: {
     borderRadius: 12,
     resizeMode: "cover",
   },
+  cardImagePlaceholder: {
+    backgroundColor: COLORS.neutral[200],
+  },
   cardBody: {
     flex: 1,
     gap: 2,
   },
-  cardLocationRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-  }
 });

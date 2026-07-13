@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   Image,
   Pressable,
-  StyleSheet,
   View,
   ViewStyle,
 } from 'react-native';
@@ -18,8 +16,8 @@ interface Props {
   neighborhood: string;
   city: string;
   state: string;
-  description: string;
-  ownerName: string;
+  description?: string;
+  ownerName?: string;
   imageUrl?: string;
   style?: ViewStyle;
   onPress?: () => void;
@@ -81,16 +79,20 @@ export function PropertyCard({
           </Typography>
         </View>
 
-        <Typography variant="body/medium" style={styles.description} numberOfLines={2}>
-          {description}
-        </Typography>
-
-        <View style={styles.ownerRow}>
-          <UserCircle size={24} color={COLORS.neutral[700]} />
-          <Typography variant="body/medium" style={styles.ownerText}>
-            {`Locador: ${ownerName}`}
+        {description && (
+          <Typography variant="body/medium" style={styles.description} numberOfLines={2}>
+            {description}
           </Typography>
-        </View>
+        )}
+
+        {ownerName && (
+          <View style={styles.ownerRow}>
+            <UserCircle size={24} color={COLORS.neutral[700]} />
+            <Typography variant="body/medium" style={styles.ownerText}>
+              {`Locador: ${ownerName}`}
+            </Typography>
+          </View>
+        )}
       </View>
     </Pressable>
   );

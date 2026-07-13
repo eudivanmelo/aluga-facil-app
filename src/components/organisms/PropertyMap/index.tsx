@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { MapMarker } from '@/components/molecules/MapMarker';
-import { MOCK_MAP_PROPERTIES, MAP_CENTER, PropertyMapItem } from '@/data/mapProperties';
+import { PropertyMapItem } from '@/services/properties';
+import { MAP_CENTER } from '@/data/mapProperties';
 import { Camera, Map } from '@maplibre/maplibre-react-native';
 import { styles } from './styles';
 import { View } from 'react-native';
@@ -10,25 +11,28 @@ const STYLE_URL = 'https://tiles.versatiles.org/assets/styles/colorful/style.jso
 const INITIAL_ZOOM = 14;
 
 interface Props {
+  properties: PropertyMapItem[];
   onMarkerPress?: (property: PropertyMapItem | null) => void;
 }
 
-export function PropertyMap({ onMarkerPress }: Props) {
+export function PropertyMap({ properties, onMarkerPress }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handleMarkerPress = useCallback(
     (id: string) => {
-      const property = MOCK_MAP_PROPERTIES.find((p) => p.id === id);
+      if (selectedId === id) {
+        setSelectedId(null);
+        onMarkerPress?.(null);
+        return;
+      }
+
+      const property = properties.find((p) => String(p.id) === id);
       if (!property) return;
 
-      setSelectedId((prev) => (prev === id ? null : id));
-
-      if (selectedId === property.id)
-        return onMarkerPress?.(null);
-
+      setSelectedId(id);
       onMarkerPress?.(property);
     },
-    [onMarkerPress]
+    [selectedId, properties, onMarkerPress]
   );
 
   return (
@@ -47,13 +51,13 @@ export function PropertyMap({ onMarkerPress }: Props) {
           easing='ease'
         />
 
-        {MOCK_MAP_PROPERTIES.map((property) => (
+        {properties.map((property) => (
           <MapMarker
             key={property.id}
-            id={property.id}
+            id={String(property.id)}
             coordinate={[property.longitude, property.latitude]}
             price={property.price}
-            isSelected={selectedId === property.id}
+            isSelected={selectedId === String(property.id)}
             onPress={handleMarkerPress}
           />
         ))}
