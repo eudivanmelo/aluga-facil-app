@@ -1,5 +1,6 @@
 import { Stack, Redirect } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { NewPropertyProvider } from '@/contexts/NewPropertyContext';
 
 export default function NewPropertyLayout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -8,10 +9,13 @@ export default function NewPropertyLayout() {
   if (!isAuthenticated) return <Redirect href="/auth/" />;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="step-1" />
-      <Stack.Screen name="step-2" />
-      <Stack.Screen name="step-3" />
-    </Stack>
+    <NewPropertyProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="step-1" />
+        <Stack.Screen name="step-2" />
+        <Stack.Screen name="step-3" />
+        <Stack.Screen name="location" />
+      </Stack>
+    </NewPropertyProvider>
   );
 }

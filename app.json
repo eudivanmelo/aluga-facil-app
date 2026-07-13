@@ -49,6 +49,18 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 200
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Aluga Fácil precisa acessar suas fotos para você adicionar imagens do imóvel."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O Aluga Fácil precisa da sua localização para centralizar o mapa ao selecionar o endereço do imóvel."
+        }
       ]
     ],
     "scheme": "aluga-facil"

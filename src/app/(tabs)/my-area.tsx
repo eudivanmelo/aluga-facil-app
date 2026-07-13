@@ -55,7 +55,7 @@ export default function MyAreaScreen() {
         />
 
         {/* 2. Banner de Adicionar Imóvel */}
-        <AddPropertyBanner onAddPress={() => console.log('Navegar para Adicionar Imóvel')} />
+        <AddPropertyBanner onAddPress={() => router.push('/my-area/new-property/step-1')} />
 
         {/* 3. Seção "Meus Imóveis" */}
         <View style={styles.sectionContainer}>
