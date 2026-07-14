@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   FlatList,
   ListRenderItemInfo,
-  Pressable,
   RefreshControl,
   StyleSheet,
   View,
@@ -39,7 +38,7 @@ export default function HomeScreen() {
 
   const renderProperty = useCallback(
     ({ item }: ListRenderItemInfo<PropertySummary>) => (
-      <Pressable onPress={() => router.push(`/property/${item.id}`)} style={styles.cardWrapper}>
+      <View style={styles.cardWrapper}>
         <PropertyCard
           title={item.title}
           price={item.price}
@@ -48,8 +47,9 @@ export default function HomeScreen() {
           city={item.city}
           state={item.state}
           imageUrl={item.firstPhotoUrl ?? undefined}
+          onPress={() => router.push(`/property/${item.id}`)}
         />
-      </Pressable>
+      </View>
     ),
     []
   );

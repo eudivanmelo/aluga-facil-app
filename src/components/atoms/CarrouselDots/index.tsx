@@ -10,7 +10,7 @@ export const CarrouselDots = ({count, activeIndex}: CarrouselDotsProps) => {
     return (
         <View style={styles.container}>
             {Array.from({ length: count }).map((_, index) => (
-                <View style={[styles.dot, (index === activeIndex && styles.activeDot)]} />
+                <View key={index} style={[styles.dot, (index === activeIndex && styles.activeDot)]} />
             ))}
         </View>
     );
