@@ -29,6 +29,7 @@ export interface PagedResponse<T> {
 }
 
 export interface PropertyFilter {
+  search?: string;
   city?: string;
   state?: string;
   minPrice?: number;
@@ -44,6 +45,11 @@ export interface PropertyFilter {
 export async function getCatalog(filter: PropertyFilter = {}): Promise<PagedResponse<PropertySummary>> {
   const { data } = await api.get<PagedResponse<PropertySummary>>('/properties', { params: filter });
   return { ...data, data: data.data.map(withResolvedPhoto) };
+}
+
+export async function getCities(): Promise<string[]> {
+  const { data } = await api.get<string[]>('/properties/cities');
+  return data;
 }
 
 export interface PropertyMapItem {

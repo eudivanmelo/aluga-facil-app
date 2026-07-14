@@ -6,7 +6,13 @@ import { COLORS } from '@/constants/colors';
 import { SearchInput } from '@/components/molecules/SearchInput';
 import { styles } from './styles';
 
-export function HomeHeader() {
+interface Props {
+  searchValue: string;
+  onChangeSearch: (value: string) => void;
+  onPressFilter: () => void;
+}
+
+export function HomeHeader({ searchValue, onChangeSearch, onPressFilter }: Props) {
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <View style={styles.container}>
@@ -18,7 +24,7 @@ export function HomeHeader() {
           </Typography>
         </View>
 
-        <SearchInput />
+        <SearchInput value={searchValue} onChangeText={onChangeSearch} onPressFilter={onPressFilter} />
       </View>
     </SafeAreaView>
   );

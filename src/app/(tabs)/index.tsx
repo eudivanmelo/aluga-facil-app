@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -10,14 +10,40 @@ import {
 import { router } from 'expo-router';
 import { HomeHeader } from '@/components/organisms/HomeHeader';
 import { PropertyCard } from '@/components/molecules/PropertyCard';
+import {
+  EMPTY_PROPERTY_FILTERS,
+  PropertyFilterModal,
+  PropertyFiltersState,
+} from '@/components/organisms/PropertyFilterModal';
 import { Typography } from '@/components/atoms/Typography';
 import { Button } from '@/components/atoms/Button';
 import { COLORS } from '@/constants/colors';
 import { useProperties } from '@/hooks/useProperties';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { PropertySummary } from '@/services/properties';
 import { getErrorMessage } from '@/utils/errors';
+import { parsePriceInput } from '@/utils/textFormat';
 
 export default function HomeScreen() {
+  const [searchText, setSearchText] = useState('');
+  const [filters, setFilters] = useState<PropertyFiltersState>(EMPTY_PROPERTY_FILTERS);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+  const debouncedSearch = useDebouncedValue(searchText);
+
+  const catalogFilter = useMemo(
+    () => ({
+      search: debouncedSearch || undefined,
+      city: filters.city || undefined,
+      minPrice: filters.minPrice ? parsePriceInput(filters.minPrice) : undefined,
+      maxPrice: filters.maxPrice ? parsePriceInput(filters.maxPrice) : undefined,
+      bedrooms: filters.bedrooms > 0 ? filters.bedrooms : undefined,
+      petsAllowed: filters.petsAllowed === '' ? undefined : filters.petsAllowed === 'sim',
+      isFurnished: filters.isFurnished === '' ? undefined : filters.isFurnished !== 'nao-mobiliado',
+    }),
+    [debouncedSearch, filters]
+  );
+
   const {
     data,
     isLoading,
@@ -28,7 +54,7 @@ export default function HomeScreen() {
     refetch,
     isError,
     error,
-  } = useProperties();
+  } = useProperties(catalogFilter);
 
   const properties = data?.pages.flatMap((page) => page.data) ?? [];
 
@@ -56,7 +82,11 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <HomeHeader />
+      <HomeHeader
+        searchValue={searchText}
+        onChangeSearch={setSearchText}
+        onPressFilter={() => setFilterModalVisible(true)}
+      />
 
       {isError ? (
         <View style={styles.errorContainer}>
@@ -64,6 +94,12 @@ export default function HomeScreen() {
             {getErrorMessage(error, 'Não foi possível carregar os imóveis.')}
           </Typography>
           <Button label="Tentar novamente" variant="primary" onPress={() => refetch()} />
+        </View>
+      ) : !isLoading && properties.length === 0 ? (
+        <View style={styles.errorContainer}>
+          <Typography variant="body/medium" color={COLORS.neutral[700]} style={styles.errorText}>
+            Nenhum imóvel encontrado com esses filtros.
+          </Typography>
         </View>
       ) : (
         <FlatList
@@ -92,6 +128,13 @@ export default function HomeScreen() {
           <ActivityIndicator size="large" color={COLORS.primary[500]} />
         </View>
       )}
+
+      <PropertyFilterModal
+        visible={filterModalVisible}
+        initialFilters={filters}
+        onApply={setFilters}
+        onClose={() => setFilterModalVisible(false)}
+      />
     </View>
   );
 }
