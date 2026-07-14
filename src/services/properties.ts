@@ -65,6 +65,45 @@ export async function getMyProperties(): Promise<PropertySummary[]> {
   return data.map(withResolvedPhoto);
 }
 
+export interface PropertyOwner {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  cpf: string;
+  verified: boolean;
+}
+
+export interface PropertyDetail {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  paymentFrequency: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  complement: string;
+  city: string;
+  state: string;
+  latitude: number;
+  longitude: number;
+  bedrooms: number;
+  bathrooms: number;
+  parkingSpaces: number;
+  petsAllowed: boolean;
+  isFurnished: boolean;
+  tags: string[];
+  photoUrls: string[];
+  owner: PropertyOwner;
+  whatsAppLink: string;
+}
+
+export async function getPropertyById(id: number): Promise<PropertyDetail> {
+  const { data } = await api.get<PropertyDetail>(`/properties/${id}`);
+  return { ...data, photoUrls: data.photoUrls.map((url) => resolveImageUrl(url) as string) };
+}
+
 function withResolvedPhoto<T extends { firstPhotoUrl: string | null }>(item: T): T {
   return { ...item, firstPhotoUrl: resolveImageUrl(item.firstPhotoUrl) };
 }
