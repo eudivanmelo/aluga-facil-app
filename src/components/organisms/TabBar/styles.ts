@@ -1,10 +1,9 @@
 import { COLORS } from "@/constants/colors";
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 32 : 20,
     left: 20,
     right: 20,
   },

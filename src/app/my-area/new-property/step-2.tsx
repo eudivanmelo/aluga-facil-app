@@ -15,7 +15,7 @@ const MAX_PHOTOS = 15;
 
 export default function NewPropertyStep2Screen() {
   const router = useRouter();
-  const { formData, updateFormData } = useNewProperty();
+  const { formData, updateFormData, propertyId } = useNewProperty();
   const [error, setError] = useState<string | null>(null);
 
   const handleContinue = () => {
@@ -30,7 +30,11 @@ export default function NewPropertyStep2Screen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
-      <WizardHeader currentStep={2} onBack={() => router.back()} />
+      <WizardHeader
+        title={propertyId ? 'Editar Imóvel' : 'Cadastrar Imóvel'}
+        currentStep={2}
+        onBack={() => router.back()}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Typography variant="heading/small" style={styles.sectionTitle}>

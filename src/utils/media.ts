@@ -27,3 +27,8 @@ export function resolveImageUrl<T extends string | null | undefined>(url: T): T 
     return url;
   }
 }
+
+/** Distinguishes photos already hosted on the backend from local picker URIs pending upload. */
+export function isRemoteUrl(uri: string): boolean {
+  return uri.startsWith('http://') || uri.startsWith('https://');
+}

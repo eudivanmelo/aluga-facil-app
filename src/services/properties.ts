@@ -141,6 +141,17 @@ export async function createProperty(payload: CreatePropertyPayload): Promise<{ 
   return data;
 }
 
+export type UpdatePropertyPayload = CreatePropertyPayload;
+
+export async function updateProperty(id: number, payload: UpdatePropertyPayload): Promise<PropertyDetail> {
+  const { data } = await api.put<PropertyDetail>(`/properties/${id}`, payload);
+  return { ...data, photoUrls: data.photoUrls.map((url) => resolveImageUrl(url) as string) };
+}
+
+export async function deleteProperty(id: number): Promise<void> {
+  await api.delete(`/properties/${id}`);
+}
+
 export async function uploadPhoto(uri: string): Promise<string> {
   const filename = uri.split('/').pop() ?? `photo-${Date.now()}.jpg`;
   const extension = /\.(\w+)$/.exec(filename)?.[1]?.toLowerCase();

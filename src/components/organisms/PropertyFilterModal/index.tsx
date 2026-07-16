@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Modal, ScrollView, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import { Typography } from '@/components/atoms/Typography';
 import { Button } from '@/components/atoms/Button';
@@ -119,10 +120,10 @@ export function PropertyFilterModal({ visible, initialFilters, onApply, onClose 
             />
           </ScrollView>
 
-          <View style={styles.footer}>
+          <SafeAreaView edges={['bottom']} style={styles.footer}>
             <Button label="Limpar" variant="outline" onPress={handleClear} style={styles.footerButton} />
             <Button label="Aplicar filtros" variant="primary" onPress={handleApply} style={styles.footerButton} />
-          </View>
+          </SafeAreaView>
         </View>
       </View>
     </Modal>

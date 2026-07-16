@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, View, ScrollView } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, View, ScrollView } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { COLORS } from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,12 +10,15 @@ import { ProfilePropertyCard } from '@/components/molecules/ProfilePropertyCard'
 import { UserMenu } from '@/components/molecules/UserMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyProperties } from '@/hooks/useMyProperties';
+import { useDeleteProperty } from '@/hooks/useDeleteProperty';
 import { formatPrice } from '@/utils/textFormat';
+import { getErrorMessage } from '@/utils/errors';
 
 export default function MyAreaScreen() {
   const router = useRouter();
   const { isAuthenticated, isLoading, user, logout } = useAuth();
   const { data: properties = [], isLoading: isLoadingProperties } = useMyProperties();
+  const { mutate: deleteProperty } = useDeleteProperty();
 
   if (isLoading) return null;
   if (!isAuthenticated) return <Redirect href="/auth/" />;
@@ -23,6 +26,20 @@ export default function MyAreaScreen() {
   const handleLogout = async () => {
     await logout();
     router.replace('/auth/');
+  };
+
+  const handleDelete = (id: number, title: string) => {
+    Alert.alert('Excluir imóvel', `Tem certeza que deseja excluir "${title}"? Essa ação não pode ser desfeita.`, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: () =>
+          deleteProperty(id, {
+            onError: (error) => Alert.alert('Erro', getErrorMessage(error, 'Não foi possível excluir o imóvel.')),
+          }),
+      },
+    ]);
   };
 
   return (
@@ -72,8 +89,8 @@ export default function MyAreaScreen() {
                 price={formatPrice(property.price)}
                 imageUrl={property.firstPhotoUrl}
                 onView={() => router.push(`/property/${property.id}`)}
-                onEdit={() => console.log('Editar imóvel', property.id)}
-                onDelete={() => console.log('Deletar imóvel', property.id)}
+                onEdit={() => router.push(`/my-area/new-property/step-1?id=${property.id}`)}
+                onDelete={() => handleDelete(property.id, property.title)}
               />
             ))
           )}

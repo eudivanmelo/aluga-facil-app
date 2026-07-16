@@ -12,13 +12,18 @@ import { COLORS } from '@/constants/colors';
 import { FURNISHED_OPTIONS, PETS_ALLOWED_OPTIONS, PROPERTY_TYPE_OPTIONS } from '@/constants/propertyOptions';
 import { useNewProperty } from '@/contexts/NewPropertyContext';
 import { useCreateProperty } from '@/hooks/useCreateProperty';
+import { useUpdateProperty } from '@/hooks/useUpdateProperty';
 import { getErrorMessage } from '@/utils/errors';
 import { parsePriceInput } from '@/utils/textFormat';
 
 export default function NewPropertyStep3Screen() {
   const router = useRouter();
-  const { formData, updateFormData, resetFormData } = useNewProperty();
-  const { mutate: createProperty, isPending, error: submitError } = useCreateProperty();
+  const { formData, updateFormData, resetFormData, propertyId } = useNewProperty();
+  const isEditing = propertyId !== null;
+  const { mutate: createProperty, isPending: isCreating, error: createError } = useCreateProperty();
+  const { mutate: updateProperty, isPending: isUpdating, error: updateError } = useUpdateProperty();
+  const isPending = isCreating || isUpdating;
+  const submitError = createError ?? updateError;
   const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = () => {
@@ -42,47 +47,58 @@ export default function NewPropertyStep3Screen() {
       formData.furnished === 'semi-mobiliado' ? 'Semi-mobiliado' : null,
     ].filter((tag): tag is string => !!tag && !formData.tags.includes(tag));
 
-    createProperty(
-      {
-        title: formData.title,
-        description: formData.description,
-        price: parsePriceInput(formData.price),
-        paymentFrequency: formData.paymentFrequency || 'mês',
-        street: formData.street,
-        number: formData.number,
-        neighborhood: formData.neighborhood,
-        complement: formData.complement,
-        city: formData.city,
-        state: formData.state,
-        latitude: formData.latitude,
-        longitude: formData.longitude,
-        bedrooms: formData.bedrooms,
-        bathrooms: formData.bathrooms,
-        parkingSpaces: formData.parkingSpaces,
-        petsAllowed: formData.petsAllowed === 'sim',
-        isFurnished: formData.furnished !== 'nao-mobiliado',
-        tags: [...formData.tags, ...extraTags],
-        photos: formData.photos,
-      },
-      {
-        onSuccess: () => {
-          Alert.alert('Imóvel cadastrado!', 'Seu anúncio foi criado com sucesso.', [
-            {
-              text: 'OK',
-              onPress: () => {
-                resetFormData();
-                router.replace('/(tabs)/my-area');
-              },
+    const payload = {
+      title: formData.title,
+      description: formData.description,
+      price: parsePriceInput(formData.price),
+      paymentFrequency: formData.paymentFrequency || 'mês',
+      street: formData.street,
+      number: formData.number,
+      neighborhood: formData.neighborhood,
+      complement: formData.complement,
+      city: formData.city,
+      state: formData.state,
+      latitude: formData.latitude,
+      longitude: formData.longitude,
+      bedrooms: formData.bedrooms,
+      bathrooms: formData.bathrooms,
+      parkingSpaces: formData.parkingSpaces,
+      petsAllowed: formData.petsAllowed === 'sim',
+      isFurnished: formData.furnished !== 'nao-mobiliado',
+      tags: [...formData.tags, ...extraTags],
+      photos: formData.photos,
+    };
+
+    const onSuccess = () => {
+      Alert.alert(
+        isEditing ? 'Imóvel atualizado!' : 'Imóvel cadastrado!',
+        isEditing ? 'As alterações foram salvas com sucesso.' : 'Seu anúncio foi criado com sucesso.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              resetFormData();
+              router.replace('/(tabs)/my-area');
             },
-          ]);
-        },
-      }
-    );
+          },
+        ]
+      );
+    };
+
+    if (propertyId !== null) {
+      updateProperty({ id: propertyId, ...payload }, { onSuccess });
+    } else {
+      createProperty(payload, { onSuccess });
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
-      <WizardHeader currentStep={3} onBack={() => router.back()} />
+      <WizardHeader
+        title={isEditing ? 'Editar Imóvel' : 'Cadastrar Imóvel'}
+        currentStep={3}
+        onBack={() => router.back()}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Typography variant="heading/small" style={styles.sectionTitle}>
@@ -145,14 +161,14 @@ export default function NewPropertyStep3Screen() {
 
         {(error || submitError) && (
           <Typography variant="body/small" color={COLORS.danger[500]} style={styles.error}>
-            {error ?? getErrorMessage(submitError, 'Não foi possível cadastrar o imóvel.')}
+            {error ?? getErrorMessage(submitError, isEditing ? 'Não foi possível salvar as alterações.' : 'Não foi possível cadastrar o imóvel.')}
           </Typography>
         )}
       </ScrollView>
 
       <View style={styles.footer}>
         <Button
-          label="Confirmar"
+          label={isEditing ? 'Salvar alterações' : 'Confirmar'}
           variant="primary"
           onPress={handleConfirm}
           loading={isPending}

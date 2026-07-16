@@ -16,7 +16,7 @@ export function PhotoGrid({ photos, onChange, max = 15 }: Props) {
   const remainingSlots = max - photos.length;
   const canAddMore = remainingSlots > 0;
 
-  const handleAddPhotos = async () => {
+  const handlePickFromLibrary = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       Alert.alert(
@@ -37,6 +37,35 @@ export function PhotoGrid({ photos, onChange, max = 15 }: Props) {
 
     const newUris = result.assets.map((asset) => asset.uri);
     onChange([...photos, ...newUris].slice(0, max));
+  };
+
+  const handleTakePhoto = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert(
+        'Permissão necessária',
+        'Precisamos de acesso à sua câmera para tirar fotos do imóvel.'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      quality: 0.7,
+    });
+
+    if (result.canceled) return;
+
+    const newUris = result.assets.map((asset) => asset.uri);
+    onChange([...photos, ...newUris].slice(0, max));
+  };
+
+  const handleAddPhotos = () => {
+    Alert.alert('Adicionar foto', 'Escolha de onde deseja adicionar a foto.', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Tirar foto', onPress: handleTakePhoto },
+      { text: 'Escolher da galeria', onPress: handlePickFromLibrary },
+    ]);
   };
 
   const handleRemove = (uri: string) => {

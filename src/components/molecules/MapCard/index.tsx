@@ -1,4 +1,5 @@
 import { Image, Pressable, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { styles } from "./styles";
 import { Typography } from "@/components/atoms/Typography";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,9 +12,14 @@ interface Props {
     property: PropertyMapItem;
 }
 
+// Clears the floating tab bar: its own bottom offset + container height + a gap.
+const TAB_BAR_CLEARANCE = 12 + 64 + 20;
+
 export const MapCard = ({ property }: Props) => {
+    const insets = useSafeAreaInsets();
+
     return (
-        <View style={styles.floatingCard}>
+        <View style={[styles.floatingCard, { bottom: insets.bottom + TAB_BAR_CLEARANCE }]}>
             <Pressable
                 style={styles.cardInner}
                 onPress={() => router.push(`/property/${property.id}`)}

@@ -5,9 +5,14 @@ import {
 } from 'react-native';
 import { Home, MapPin, LogIn, KeySquare } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '@/components/atoms/Typography';
 import { COLORS } from '@/constants/colors';
 import { styles } from './styles';
+
+// Gap above the safe-area inset (home indicator / Android system nav bar) so the
+// floating tab bar never sits underneath it.
+const BASE_BOTTOM_OFFSET = 12;
 
 export type TabRoute = 'catalog' | 'map' | 'auth';
 
@@ -37,9 +42,10 @@ const TABS_LOGGED: Tab[] = [
 
 export function TabBar({ activeRoute, isAuthenticated = false, onPress }: Props) {
     const tabs = isAuthenticated ? TABS_LOGGED : TABS_GUEST;
+    const insets = useSafeAreaInsets();
 
     return (
-        <View style={styles.wrapper}>
+        <View style={[styles.wrapper, { bottom: insets.bottom + BASE_BOTTOM_OFFSET }]}>
             <BlurView intensity={40} tint="light" style={styles.container}>
                 {tabs.map(({ route, label, Icon }) => {
                     const isActive = activeRoute === route;

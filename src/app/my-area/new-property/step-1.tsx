@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MapPin } from 'lucide-react-native';
 import { Typography } from '@/components/atoms/Typography';
 import { Button } from '@/components/atoms/Button';
@@ -14,14 +14,61 @@ import {
   PAYMENT_FREQUENCY_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
 } from '@/constants/propertyOptions';
-import { useNewProperty } from '@/contexts/NewPropertyContext';
+import { NewPropertyFormData, useNewProperty } from '@/contexts/NewPropertyContext';
+import { useProperty } from '@/hooks/useProperty';
+import { PropertyDetail } from '@/services/properties';
+
+function mapPropertyDetailToFormData(property: PropertyDetail): NewPropertyFormData {
+  const propertyType = PROPERTY_TYPE_OPTIONS.find((o) => property.tags.includes(o.label))?.value ?? '';
+  const propertyTypeLabel = PROPERTY_TYPE_OPTIONS.find((o) => o.value === propertyType)?.label;
+  const isSemiFurnished = property.tags.includes('Semi-mobiliado');
+  const tags = property.tags.filter((tag) => tag !== propertyTypeLabel && tag !== 'Semi-mobiliado');
+
+  return {
+    title: property.title,
+    description: property.description,
+    propertyType,
+    price: String(property.price),
+    paymentFrequency: property.paymentFrequency,
+    street: property.street,
+    number: property.number,
+    neighborhood: property.neighborhood,
+    complement: property.complement,
+    city: property.city,
+    state: property.state,
+    latitude: property.latitude,
+    longitude: property.longitude,
+    photos: property.photoUrls,
+    bedrooms: property.bedrooms,
+    bathrooms: property.bathrooms,
+    parkingSpaces: property.parkingSpaces,
+    petsAllowed: property.petsAllowed ? 'sim' : 'nao',
+    furnished: !property.isFurnished ? 'nao-mobiliado' : isSemiFurnished ? 'semi-mobiliado' : 'mobiliado',
+    tags,
+  };
+}
 
 export default function NewPropertyStep1Screen() {
   const router = useRouter();
-  const { formData, updateFormData } = useNewProperty();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const editId = id ? Number(id) : null;
+  const { formData, updateFormData, propertyId, setPropertyId } = useNewProperty();
   const [error, setError] = useState<string | null>(null);
+  const loadedEditRef = useRef(false);
+
+  const { data: editingProperty } = useProperty(editId ?? NaN);
+
+  useEffect(() => {
+    if (editId && editingProperty && !loadedEditRef.current) {
+      loadedEditRef.current = true;
+      setPropertyId(editId);
+      updateFormData(mapPropertyDetailToFormData(editingProperty));
+    }
+  }, [editId, editingProperty]);
 
   const hasLocation = formData.latitude !== null && formData.longitude !== null;
+  const isEditing = propertyId !== null;
+  const waitingForEditData = !!editId && !loadedEditRef.current;
 
   const handleContinue = () => {
     if (
@@ -39,9 +86,24 @@ export default function NewPropertyStep1Screen() {
     router.push('/my-area/new-property/step-2');
   };
 
+  if (waitingForEditData) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+        <WizardHeader title="Editar Imóvel" currentStep={1} onBack={() => router.back()} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary[500]} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
-      <WizardHeader currentStep={1} onBack={() => router.back()} />
+      <WizardHeader
+        title={isEditing ? 'Editar Imóvel' : 'Cadastrar Imóvel'}
+        currentStep={1}
+        onBack={() => router.back()}
+      />
 
       <KeyboardAvoidingView style={styles.keyboardView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -189,6 +251,11 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scrollContent: {
     padding: 16,

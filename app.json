@@ -53,7 +53,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "O Aluga Fácil precisa acessar suas fotos para você adicionar imagens do imóvel."
+          "photosPermission": "O Aluga Fácil precisa acessar suas fotos para você adicionar imagens do imóvel.",
+          "cameraPermission": "O Aluga Fácil precisa acessar sua câmera para você tirar fotos do imóvel."
         }
       ],
       [
